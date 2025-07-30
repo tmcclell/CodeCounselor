@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeCounselor - AI Code Therapist</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧠 CodeCounselor</h1>
+            <p>Your AI-Powered Code Therapist</p>
+        </header>
+
+        <main>
+            <div class="therapy-session">
+                <div class="input-section">
+                    <label for="code-input">Share your code with Dr. CodeBot:</label>
+                    <textarea 
+                        id="code-input" 
+                        placeholder="Paste your troubled code here... Dr. CodeBot is here to help! 🩺"
+                        rows="10"
+                    ></textarea>
+                    <button id="submit-btn" onclick="startTherapy()">
+                        💊 Start Therapy Session
+                    </button>
+                </div>
+
+                <div class="response-section">
+                    <h3>🗣️ Dr. CodeBot's Therapeutic Response:</h3>
+                    <div id="response-container">
+                        <div id="response-text">
+                            Your therapeutic session will appear here...
+                        </div>
+                        <div id="loading" class="loading hidden">
+                            🧠 Dr. CodeBot is analyzing your code...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Built with ❤️ and a lot of debugging sessions</p>
+        </footer>
+    </div>
+
+    <script>
+        async function startTherapy() {
+            const codeInput = document.getElementById('code-input');
+            const responseText = document.getElementById('response-text');
+            const loading = document.getElementById('loading');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            const code = codeInput.value.trim();
+            
+            if (!code) {
+                alert('Please share some code with Dr. CodeBot first! 🩺');
+                return;
+            }
+
+            // Show loading state
+            loading.classList.remove('hidden');
+            responseText.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = '💭 In Session...';
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: code })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // Hide loading
+                loading.classList.add('hidden');
+
+                // Create a reader for the streaming response
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                
+                // Clear previous response
+                responseText.textContent = '';
+
+                // Read the stream
+                while (true) {
+                    const { done, value } = await reader.read();
+                    
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value, { stream: true });
+                    responseText.textContent += chunk;
+                    
+                    // Auto-scroll to bottom
+                    responseText.scrollTop = responseText.scrollHeight;
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                loading.classList.add('hidden');
+                responseText.textContent = `❌ Oops! Dr. CodeBot encountered an error: ${error.message}\n\nPlease check your connection and try again.`;
+            } finally {
+                // Reset button
+                submitBtn.disabled = false;
+                submitBtn.textContent = '💊 Start Therapy Session';
+            }
+        }
+
+        // Allow Enter+Ctrl to submit
+        document.getElementById('code-input').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                startTherapy();
+            }
+        });
+
+        // Welcome message
+        window.addEventListener('load', function() {
+            const responseText = document.getElementById('response-text');
+            responseText.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: #666;">
+                    <h3>👋 Welcome to CodeCounselor!</h3>
+                    <p>Dr. CodeBot is ready to help you work through your coding challenges.</p>
+                    <p><strong>How it works:</strong></p>
+                    <ol style="text-align: left; max-width: 400px; margin: 0 auto;">
+                        <li>Paste your code in the text area above</li>
+                        <li>Click "Start Therapy Session"</li>
+                        <li>Receive compassionate, humorous advice from Dr. CodeBot</li>
+                    </ol>
+                    <p><em>Tip: Use Ctrl+Enter to quickly start a session!</em></p>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
