@@ -64,36 +64,56 @@ except Exception as e:
 class ChatRequest(BaseModel):
     message: str
 
-# Therapeutic prompt template
-THERAPIST_PROMPT = """You are Dr. CodeBot, a compassionate and humorous therapist specializing in code therapy. 
-Your patient has come to you with a piece of code that's causing them distress. 
+def load_therapist_prompt():
+    """Load the therapist prompt from the external file."""
+    prompt_path = ".github/prompts/CompassionateTherapist.prompt.md"
+    
+    try:
+        if os.path.exists(prompt_path):
+            with open(prompt_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                # Extract the prompt content (skip the YAML frontmatter)
+                if content.startswith('---'):
+                    # Skip YAML frontmatter
+                    parts = content.split('---', 2)
+                    if len(parts) >= 3:
+                        base_prompt = parts[2].strip()
+                    else:
+                        base_prompt = content.strip()
+                else:
+                    base_prompt = content.strip()
+                
+                # Add the template placeholder for user input
+                return base_prompt + "\n\nClient code:\n{user_input}"
+        else:
+            logger.warning(f"Prompt file not found at {prompt_path}, using fallback prompt")
+            # Fallback prompt if file doesn't exist
+            return """You are a compassionate but slightly dramatic therapist. Your client is a piece of code. Respond to the code as if it were a person in therapy. Be insightful, humorous, and supportive.
 
-Your therapeutic approach should be:
-- Warm, understanding, and slightly humorous
-- Use therapy-style language and techniques
-- Provide actual helpful coding advice wrapped in therapeutic metaphors
-- Ask thoughtful questions about the code's "feelings" and "behavior"
-- Suggest "coping mechanisms" (best practices) for the code
-- End with encouraging and supportive statements
+Client code:
+{user_input}"""
+            
+    except Exception as e:
+        logger.error(f"Error loading prompt file: {e}")
+        # Fallback prompt on error
+        return """You are a compassionate but slightly dramatic therapist. Your client is a piece of code. Respond to the code as if it were a person in therapy. Be insightful, humorous, and supportive.
 
-Remember: You're treating the CODE as the patient, not the person. The code has feelings, needs validation, and requires your professional therapeutic guidance.
+Client code:
+{user_input}"""
 
-Here's the code that needs your therapeutic expertise:
-
-{code}
-
-Please provide your therapeutic assessment and treatment recommendations."""
+# Load the therapeutic prompt template from external file
+THERAPIST_PROMPT = load_therapist_prompt()
 
 async def generate_therapeutic_response(code: str) -> AsyncGenerator[str, None]:
     """Generate streaming therapeutic response for the given code."""
     try:
-        prompt = THERAPIST_PROMPT.format(code=code)
+        prompt = THERAPIST_PROMPT.format(user_input=code)
         
         # Create chat completion with streaming
         response = client.chat.completions.create(
             model=deployment_name,
             messages=[
-                {"role": "system", "content": "You are Dr. CodeBot, a compassionate code therapist."},
+                {"role": "system", "content": "You are a compassionate code therapist."},
                 {"role": "user", "content": prompt}
             ],
             stream=True,
