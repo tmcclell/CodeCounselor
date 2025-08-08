@@ -8,7 +8,9 @@ A humorous AI-powered web app that acts as a therapist for code. Submit your cod
 - **Streaming Responses**: Real-time streaming responses from Azure OpenAI for immediate feedback
 - **FastAPI Backend**: High-performance API built with FastAPI
 - **Azure OpenAI Integration**: Powered by Azure's OpenAI service for reliable and scalable AI responses
-- **Simple Frontend**: Basic HTML/JS interface for easy interaction
+- **Dual Frontend Options**:
+  - **🆕 Streamlit Frontend**: Modern, feature-rich interface with syntax highlighting, chat history, and real-time status monitoring
+  - **Classic HTML Frontend**: Simple, lightweight HTML/JS interface for basic interaction
 
 ## Prerequisites
 
@@ -63,6 +65,27 @@ AZURE_OPENAI_API_VERSION=2024-02-15-preview
 
 ## Running the Application
 
+### Quick Start (Recommended)
+```bash
+# Start FastAPI backend
+python run_dev.py
+```
+
+Then choose your preferred frontend:
+
+#### 🆕 Streamlit Frontend (Recommended)
+```bash
+# In a new terminal
+streamlit run streamlit_app.py
+```
+- **URL**: http://localhost:8501
+- **Features**: Syntax highlighting, chat history, real-time status, debug panel
+
+#### Classic HTML Frontend
+- **URL**: http://localhost:8000/static/index.html
+- **Features**: Simple, lightweight interface
+
+### Manual Setup
 1. **Start the FastAPI server**
    ```bash
    uvicorn main:app --reload --host 0.0.0.0 --port 8000
@@ -71,7 +94,8 @@ AZURE_OPENAI_API_VERSION=2024-02-15-preview
 2. **Access the application**
    - API: http://localhost:8000
    - Interactive API docs: http://localhost:8000/docs
-   - Frontend (if available): http://localhost:8000/static/index.html
+   - Streamlit Frontend: http://localhost:8501 (after running `streamlit run streamlit_app.py`)
+   - HTML Frontend: http://localhost:8000/static/index.html
 
 ## API Usage
 
@@ -103,14 +127,47 @@ curl -X POST "http://localhost:8000/chat" \
 ```
 CodeCounselor/
 ├── main.py                 # FastAPI application
-├── requirements.txt        # Python dependencies
+├── streamlit_app.py        # 🆕 Streamlit frontend
+├── requirements.txt        # Python dependencies (updated with Streamlit)
 ├── .env                   # Environment variables (not in repo)
 ├── .env.example          # Environment variables template
-├── static/               # Frontend files (optional)
+├── run_dev.py            # Development server runner
+├── STREAMLIT_GUIDE.md    # 🆕 Detailed Streamlit documentation
+├── static/               # Classic HTML frontend
 │   ├── index.html
 │   └── style.css
 └── README.md            # This file
 ```
+
+## Streamlit Frontend Features
+
+The new Streamlit frontend offers enhanced functionality:
+
+### 🎨 Enhanced Code Editor
+- **Syntax highlighting** with multiple themes (monokai, github, etc.)
+- **Line numbers** and code folding
+- **Multi-language support** (Python, JavaScript, etc.)
+- **Keyboard shortcuts** (Ctrl+Enter to submit)
+
+### 💬 Session Management
+- **Chat history** with expandable sessions
+- **Timestamp tracking** for all interactions
+- **Code preservation** in conversation history
+- **Clear history** functionality
+
+### 🔧 Advanced Monitoring
+- **Real-time connection status** indicators
+- **API configuration** panel
+- **Debug information** with detailed backend status
+- **Health checks** with one-click testing
+
+### 📱 Modern UI/UX
+- **Responsive design** for mobile and desktop
+- **Professional styling** with clean layouts
+- **Loading indicators** and progress feedback
+- **Error handling** with helpful troubleshooting
+
+For detailed Streamlit documentation, see [STREAMLIT_GUIDE.md](STREAMLIT_GUIDE.md).
 
 ## Development
 
