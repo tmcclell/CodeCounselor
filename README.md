@@ -8,7 +8,9 @@ A humorous AI-powered web app that acts as a therapist for code. Submit your cod
 - **Streaming Responses**: Real-time streaming responses from Azure OpenAI for immediate feedback
 - **FastAPI Backend**: High-performance API built with FastAPI
 - **Azure OpenAI Integration**: Powered by Azure's OpenAI service for reliable and scalable AI responses
-- **Simple Frontend**: Basic HTML/JS interface for easy interaction
+- **Dual Frontend Options**: 
+  - **Streamlit App**: Modern Python-native interface with interactive widgets, syntax highlighting, and session management
+  - **HTML/JS Interface**: Lightweight static frontend for basic interactions
 
 ## Prerequisites
 
@@ -63,15 +65,38 @@ AZURE_OPENAI_API_VERSION=2024-02-15-preview
 
 ## Running the Application
 
+### Option 1: Streamlit Frontend (Recommended)
+
+1. **Start the FastAPI backend**
+   ```bash
+   uvicorn main:app --reload --host 0.0.0.0 --port 8000
+   ```
+   Or use the development script:
+   ```bash
+   python run_dev.py
+   ```
+
+2. **Start the Streamlit frontend** (in a separate terminal)
+   ```bash
+   streamlit run streamlit_app.py --server.port 8501
+   ```
+
+3. **Access the applications**
+   - **Streamlit Frontend**: http://localhost:8501 (recommended)
+   - **FastAPI Backend**: http://localhost:8000
+   - **API Documentation**: http://localhost:8000/docs
+
+### Option 2: HTML/JS Frontend (Legacy)
+
 1. **Start the FastAPI server**
    ```bash
    uvicorn main:app --reload --host 0.0.0.0 --port 8000
    ```
 
 2. **Access the application**
-   - API: http://localhost:8000
-   - Interactive API docs: http://localhost:8000/docs
-   - Frontend (if available): http://localhost:8000/static/index.html
+   - **Frontend**: http://localhost:8000/static/index.html
+   - **API**: http://localhost:8000
+   - **Interactive API docs**: http://localhost:8000/docs
 
 ## API Usage
 
@@ -103,14 +128,44 @@ curl -X POST "http://localhost:8000/chat" \
 ```
 CodeCounselor/
 ├── main.py                 # FastAPI application
-├── requirements.txt        # Python dependencies
+├── streamlit_app.py        # Streamlit frontend application
+├── requirements.txt        # Python dependencies (includes Streamlit)
 ├── .env                   # Environment variables (not in repo)
 ├── .env.example          # Environment variables template
-├── static/               # Frontend files (optional)
+├── static/               # Legacy HTML/JS frontend
 │   ├── index.html
 │   └── style.css
+├── run_dev.py            # Development script for FastAPI
 └── README.md            # This file
 ```
+
+## Streamlit Frontend Features
+
+The new Streamlit frontend provides an enhanced user experience with:
+
+### Core Features
+- **Interactive Code Editor**: Syntax highlighting with ACE editor and fallback text area
+- **Real-time Streaming**: Watch AI responses appear in real-time as they're generated
+- **Connection Status**: Live backend health monitoring with clear status indicators
+- **Session Management**: Persistent chat history throughout your session
+- **Mobile-Responsive**: Works seamlessly on desktop and mobile devices
+
+### User Interface
+- **Sidebar Settings**: Backend configuration and connection testing
+- **Chat History**: Expandable conversation history with timestamps
+- **Professional Styling**: CodeCounselor-branded interface with gradient themes
+- **Error Handling**: Clear error messages with troubleshooting guidance
+- **Loading States**: Visual feedback during processing
+
+### Usage Instructions
+1. **Check Connection**: Click "Check Backend Health" to verify FastAPI backend is running
+2. **Configure Backend**: Adjust the FastAPI Backend URL if using a different port
+3. **Enter Code**: Use either the syntax-highlighted editor or the fallback text area
+4. **Start Therapy**: Click the therapy button to get AI analysis of your code
+5. **View History**: Expand previous sessions to review past conversations
+6. **Clear History**: Use the clear button to start fresh
+
+Both frontends (Streamlit and HTML/JS) can run simultaneously, giving you the flexibility to choose your preferred interface.
 
 ## Development
 
